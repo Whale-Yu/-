@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编程献礼，致敬伟大祖国</title>
+    <style>
+        body {
+            background-color: #87CEEB; /* 天空蓝色背景 */
+            color: white;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            padding-bottom: 50px; /* 增加底部填充空间，避免内容被遮挡 */
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-size: 46px;
+            color: #FFD700; /* 金色 */
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 5px #FF4500;
+        }
+
+        .flag {
+            position: relative;
+            width: 250px;
+            margin: 40px auto 0 auto;
+        }
+
+        /* 红旗飘动动画 */
+        @keyframes wave {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(6deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .flag img {
+            width: 100%;
+            animation: wave 3s ease-in-out infinite;
+        }
+
+        /* LED灯闪烁 */
+        .led {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .led div {
+            width: 15px;
+            height: 15px;
+            background-color: #FF4500;
+            border-radius: 50%;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+
+        /* 天安门和长城图片动画 */
+        .landmark {
+            position: absolute;
+            bottom: 50px;
+            width: 150px;
+            opacity: 0;
+            animation: fadeIn 3s forwards;
+        }
+
+        .landmark.tiananmen {
+            left: 10%;
+            bottom: 50px;
+        }
+
+        .landmark.greatwall {
+            right: 10%;
+            bottom: 70px;
+
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* 烟花动画 */
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* 按钮样式 */
+        .button {
+            margin-top: 40px;
+            padding: 15px 30px;
+            background-color: #FF4500;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0px 4px 10px rgba(255, 69, 0, 0.5);
+        }
+
+        .button:hover {
+            background-color: #FFD700;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 26px;
+            color: #FFD700;
+            display: none;
+            text-shadow: 2px 2px 8px #FF4500;
+        }
+
+        /* 底部作者信息 */
+        footer {
+            position: fixed; /* 固定定位 */
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            /*background-color: rgba(0, 0, 0, 0.5); !* 半透明背景 *!*/
+            color: #aaa;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>祝祖国75周年华诞</h1>
+
+    <!-- LED闪烁 -->
+    <div class="led">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <!-- 动态红旗 -->
+    <div class="flag">
+        <img src="img.png" alt="国旗">
+    </div>
+
+    <!-- 天安门和长城 -->
+    <img src="天安门.gif" alt="天安门" class="landmark tiananmen">
+    <img src="122222.gif" alt="长城" class="landmark greatwall">
+
+    <!-- 按钮及祝福信息 -->
+    <button class="button" onclick="celebrate()">点击祝福祖国</button>
+    <div class="message" id="message">祝祖国繁荣昌盛，人民幸福安康！</div>
+
+    <!-- 烟花效果 -->
+    <canvas id="fireworksCanvas" class="fireworks"></canvas>
+
+    <!-- 背景音乐 -->
+    <audio id="bg-music" src="M500000hA1u74Jwlp6.mp3" loop></audio>
+
+    <!-- 作者信息 -->
+    <footer>
+        <p>由 [余俊瑜] 精心制作 © 2024</p>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function createFirework(x, y) {
+            const particles = [];
+            const colors = ['#FF5733', '#FFD700', '#33FF57', '#339FFF', '#FF33F6'];
+
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    xSpeed: (Math.random() - 0.5) * 5,
+                    ySpeed: (Math.random() - 0.5) * 5,
+                    size: Math.random() * 2 + 1,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    alpha: 1
+                });
+            }
+
+            return particles;
+        }
+
+        let fireworks = [];
+
+        function updateFireworks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            fireworks.forEach((firework, index) => {
+                firework.forEach((particle) => {
+                    ctx.globalAlpha = particle.alpha;
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    particle.x += particle.xSpeed;
+                    particle.y += particle.ySpeed;
+                    particle.alpha -= 0.02;
+                });
+                if (firework[0].alpha <= 0) {
+                    fireworks.splice(index, 1);
+                }
+            });
+        }
+
+        function launchFirework() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            fireworks.push(createFirework(x, y));
+        }
+
+        setInterval(launchFirework, 1000);
+        setInterval(updateFireworks, 16);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // 点击按钮后的行为
+        function celebrate() {
+            document.getElementById('message').style.display = 'block';
+            document.getElementById('bg-music').play(); // 播放音乐
+            launchFirework(); // 立即放一个烟花
+        }
+    </script>
+</body>
+</html>
